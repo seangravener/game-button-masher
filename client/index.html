@@ -1,88 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Button Masher - Multiplayer Game</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <h1>🎮 Button Masher 🎮</h1>
+      <h1>🎮 Button Masher 🎮</h1>
 
-        <!-- Join/Create Screen -->
-        <div class="join-screen active">
-            <div class="instructions">
-                <strong>Welcome to Button Masher!</strong><br>
-                A multiplayer button-smashing game for 2-4 players.<br><br>
-                <strong>How to Play:</strong><br>
-                1. Create a new room or join an existing one<br>
-                2. Share the room code with friends<br>
-                3. When everyone's ready, the game starts!<br>
-                4. Click your button as fast as you can for 10 seconds<br>
-                5. Most clicks wins!
-            </div>
-
-            <div class="player-input">
-                <input type="text" id="playerName" placeholder="Enter your name" value="Player">
-                <input type="color" id="playerColor" class="color-picker" value="#ff6b6b">
-            </div>
-
-            <button class="btn" onclick="createRoom()">Create New Room</button>
-
-            <div class="divider">OR</div>
-
-            <div class="join-room-section">
-                <input type="text" id="roomCodeInput" placeholder="Enter Room Code" maxlength="4"
-                    style="text-transform: uppercase;">
-                <button class="btn" onclick="joinRoom()">Join Room</button>
-            </div>
+      <!-- Join/Create Screen -->
+      <div class="join-screen active">
+        <div class="instructions">
+          <strong>Welcome to Button Masher!</strong><br />
+          A multiplayer button-smashing game for 2-4 players.<br /><br />
+          <strong>How to Play:</strong><br />
+          1. Create a new room or join an existing one<br />
+          2. Share the room code with friends<br />
+          3. When everyone's ready, the game starts!<br />
+          4. Click your button as fast as you can for 10 seconds<br />
+          5. Most clicks wins!
         </div>
 
-        <!-- Waiting Room Screen -->
-        <div class="waiting-screen">
-            <div class="room-info">
-                <h2>Room Code: <span id="roomCode" class="room-code">----</span></h2>
-                <p class="room-hint">Share this code with your friends!</p>
-            </div>
-
-            <div class="players-waiting" id="playersWaiting">
-                <!-- Players will be added here dynamically -->
-            </div>
-
-            <div class="ready-section">
-                <button class="btn ready-btn" id="readyBtn" onclick="toggleReady()">
-                    Ready Up!
-                </button>
-                <p class="waiting-text" id="waitingText">Waiting for players to ready up...</p>
-            </div>
+        <div class="player-input">
+          <input
+            type="text"
+            id="playerName"
+            placeholder="Enter your name"
+            value="Player"
+          />
+          <input
+            type="color"
+            id="playerColor"
+            class="color-picker"
+            value="#ff6b6b"
+          />
         </div>
 
-        <!-- Game Screen -->
-        <div class="game-screen">
-            <div class="countdown" id="countdown">3</div>
-            <div class="timer" id="timer">10</div>
-            <div class="players-grid" id="playersGrid"></div>
+        <button class="btn" onclick="createRoom()">Create New Room</button>
+
+        <div class="divider">OR</div>
+
+        <div class="join-room-section">
+          <input
+            type="text"
+            id="roomCodeInput"
+            placeholder="Enter Room Code"
+            maxlength="4"
+            style="text-transform: uppercase"
+          />
+          <button class="btn" onclick="joinRoom()">Join Room</button>
+        </div>
+      </div>
+
+      <!-- Waiting Room Screen -->
+      <div class="waiting-screen">
+        <div class="room-info">
+          <h2>Room Code: <span id="roomCode" class="room-code">----</span></h2>
+          <p class="room-hint">Share this code with your friends!</p>
         </div>
 
-        <!-- Results Screen -->
-        <div class="results-screen">
-            <div style="text-align: center;">
-                <div class="trophy">🏆</div>
-                <h2 id="winnerName" style="color: #667eea; margin-bottom: 30px;">Winner!</h2>
-            </div>
-            <div class="results-list" id="resultsList"></div>
-            <button class="btn" onclick="playAgain()">Play Again</button>
-            <button class="btn secondary-btn" onclick="leaveRoom()">Leave Room</button>
+        <div class="players-waiting" id="playersWaiting">
+          <!-- Players will be added here dynamically -->
         </div>
+
+        <div class="ready-section">
+          <button class="btn ready-btn" id="readyBtn" onclick="toggleReady()">
+            Ready Up!
+          </button>
+          <p class="waiting-text" id="waitingText">
+            Waiting for players to ready up...
+          </p>
+        </div>
+      </div>
+
+      <!-- Game Screen -->
+      <div class="game-screen">
+        <div class="countdown" id="countdown">3</div>
+        <div class="timer" id="timer">10</div>
+        <div class="players-grid" id="playersGrid"></div>
+      </div>
+
+      <!-- Results Screen -->
+      <div class="results-screen">
+        <div style="text-align: center">
+          <div class="trophy">🏆</div>
+          <h2 id="winnerName" style="color: #667eea; margin-bottom: 30px">
+            Winner!
+          </h2>
+        </div>
+        <div class="results-list" id="resultsList"></div>
+        <button class="btn" onclick="playAgain()">Play Again</button>
+        <button class="btn secondary-btn" onclick="leaveRoom()">
+          Leave Room
+        </button>
+      </div>
     </div>
 
     <!-- Socket.IO client library -->
     <script src="/socket.io/socket.io.js"></script>
     <!-- Game client logic -->
     <script src="game-client.js"></script>
-</body>
-
+  </body>
 </html>
