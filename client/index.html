@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
 
-  <body>
-    <div class="container">
-      <h1>🎮 Button Masher 🎮</h1>
+  <body style="flex-direction: column">
+    <!-- Header Panel -->
+    <div class="panel panel-header">
+      <h1>Button Smash</h1>
+    </div>
 
+    <div class="container">
       <!-- Join/Create Screen -->
       <div class="join-screen active">
         <div class="instructions">
@@ -19,8 +22,9 @@
           <strong>How to Play:</strong><br />
           1. Create a new room or join an existing one<br />
           2. Share the room code with friends<br />
-          3. When everyone's ready, the game starts!<br />
-          4. Click your button as fast as you can for 10 seconds<br />
+          3. When everyone set's their <strong>ready-up</strong> status, the
+          game starts!<br />
+          4. Click your button as fast as you can<br />
           5. Most clicks wins!
         </div>
 
@@ -57,43 +61,69 @@
 
       <!-- Waiting Room Screen -->
       <div class="waiting-screen">
-        <div class="room-info">
-          <h2>Room Code: <span id="roomCode" class="room-code">----</span></h2>
-          <p class="room-hint">Share this code with your friends!</p>
-        </div>
+        <div class="game-layout">
+          <!-- Left Column -->
+          <div class="column-left">
+            <!-- Room Info Panel -->
+            <div class="panel panel-blue room-info-panel">
+              <div class="room-info">
+                <h2>
+                  Room Code: <span id="roomCode" class="room-code">----</span>
+                </h2>
+                <p class="room-hint">Share this code with your friends!</p>
+              </div>
+            </div>
 
-        <div class="players-waiting" id="playersWaiting">
-          <!-- Players will be added here dynamically -->
-        </div>
-
-        <!-- Chat Section -->
-        <div class="chat-section">
-          <h3 class="chat-header">💬 Chat</h3>
-          <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be added here dynamically -->
+            <!-- Chat Panel (Pipe Style) -->
+            <div class="panel panel-pipe">
+              <div class="chat-section">
+                <h3 class="chat-header">💬 Chat</h3>
+                <div class="chat-messages" id="chatMessages">
+                  <!-- Messages will be added here dynamically -->
+                </div>
+                <div class="chat-input-area">
+                  <input
+                    type="text"
+                    id="chatInput"
+                    class="chat-input"
+                    placeholder="Type a message..."
+                    maxlength="100"
+                    onkeypress="if(event.key==='Enter') sendChatMessage()"
+                  />
+                  <button class="chat-send-btn" onclick="sendChatMessage()">
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="chat-input-area">
-            <input
-              type="text"
-              id="chatInput"
-              class="chat-input"
-              placeholder="Type a message..."
-              maxlength="100"
-              onkeypress="if(event.key==='Enter') sendChatMessage()"
-            />
-            <button class="chat-send-btn" onclick="sendChatMessage()">
-              Send
-            </button>
-          </div>
-        </div>
 
-        <div class="ready-section">
-          <button class="btn ready-btn" id="readyBtn" onclick="toggleReady()">
-            Ready Up!
-          </button>
-          <p class="waiting-text" id="waitingText">
-            Waiting for players to ready up...
-          </p>
+          <!-- Right Column -->
+          <div class="column-right">
+            <!-- Players Panel -->
+            <div class="panel panel-pink">
+              <h3 class="panel-title">Players</h3>
+              <div class="players-waiting" id="playersWaiting">
+                <!-- Players will be added here dynamically -->
+              </div>
+            </div>
+
+            <!-- Ready-Up Panel -->
+            <div class="panel panel-orange">
+              <div class="ready-section">
+                <button
+                  class="btn ready-btn"
+                  id="readyBtn"
+                  onclick="toggleReady()"
+                >
+                  Ready Up!
+                </button>
+                <p class="waiting-text" id="waitingText">
+                  Waiting for players to ready up...
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -108,7 +138,15 @@
       <div class="results-screen">
         <div style="text-align: center">
           <div class="trophy">🏆</div>
-          <h2 id="winnerName" style="color: #FFFFFF; text-shadow: 4px 4px 0px #000000, -2px -2px 0px #C84C0C; margin-bottom: 30px; text-transform: uppercase;">
+          <h2
+            id="winnerName"
+            style="
+              color: #ffffff;
+              text-shadow: 4px 4px 0px #000000, -2px -2px 0px #c84c0c;
+              margin-bottom: 30px;
+              text-transform: uppercase;
+            "
+          >
             Winner!
           </h2>
         </div>
@@ -120,9 +158,7 @@
       </div>
     </div>
 
-    <!-- Socket.IO client library -->
     <script src="/socket.io/socket.io.js"></script>
-    <!-- Game client logic -->
     <script src="game-client.js"></script>
   </body>
 </html>
