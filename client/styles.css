@@ -72,15 +72,48 @@ body::after {
   z-index: 1;
 }
 
-h1 {
+/* ========================================
+   GAME HEADER (Text-Only)
+   ======================================== */
+
+.game-header {
   text-align: center;
+  padding: 40px 20px 20px 20px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+h1 {
+  font-family: "Bungee", "Courier New", monospace;
+  font-size: 4em;
   color: #ffffff;
-  /* margin-bottom: 30px; */
-  font-size: 2.5em;
-  text-shadow: 4px 4px 0px #000000, -2px -2px 0px #ff4040;
-  font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.05em;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+
+  /* Layered text shadow for depth and impact */
+  text-shadow:
+    /* Black outline */
+    6px 6px 0px #000000,
+    -3px -3px 0px #000000,
+    3px -3px 0px #000000,
+    -3px 3px 0px #000000,
+
+    /* Orange/red highlight for retro pop */
+    -4px -4px 0px #ff4040,
+
+    /* Deep shadow for 3D effect */
+    8px 8px 0px rgba(0, 0, 0, 0.5),
+
+    /* Subtle glow */
+    0 0 30px rgba(252, 176, 64, 0.3);
+
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 h2 {
@@ -126,19 +159,8 @@ h2 {
   right: 8px;
 }
 
-/* Header Panel (Orange Block) */
-.panel-header {
-  background: linear-gradient(180deg, #fcb040 0%, #f8a848 100%);
-  padding: 30px;
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto 20px auto;
-  position: relative;
-  z-index: 1;
-}
-
-.panel-header h1 {
-  margin: 0;
+.panel-players {
+  /* min-height: 632px; */
 }
 
 /* Blue Panel (Room Info) */
@@ -386,8 +408,8 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 15px;
-  margin: 30px 0;
-  min-height: 150px;
+  margin: 24px 0;
+  min-height: 50px;
 }
 
 .player-card {
@@ -775,12 +797,20 @@ h2 {
     gap: 15px;
   }
 
-  .panel-header {
-    padding: 25px;
+  .game-header {
+    padding: 30px 20px 15px 20px;
   }
 
   h1 {
-    font-size: 2.2em;
+    font-size: 3em;
+    text-shadow:
+      5px 5px 0px #000000,
+      -2px -2px 0px #000000,
+      2px -2px 0px #000000,
+      -2px 2px 0px #000000,
+      -3px -3px 0px #ff4040,
+      6px 6px 0px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(252, 176, 64, 0.3);
   }
 }
 
@@ -795,12 +825,20 @@ h2 {
     margin-bottom: 15px;
   }
 
-  .panel-header {
-    padding: 20px;
+  .game-header {
+    padding: 20px 15px 10px 15px;
   }
 
   h1 {
-    font-size: 2em;
+    font-size: 2.2em;
+    text-shadow:
+      4px 4px 0px #000000,
+      -2px -2px 0px #000000,
+      2px -2px 0px #000000,
+      -2px 2px 0px #000000,
+      -3px -3px 0px #ff4040,
+      5px 5px 0px rgba(0, 0, 0, 0.5),
+      0 0 15px rgba(252, 176, 64, 0.3);
   }
 
   .room-code {
