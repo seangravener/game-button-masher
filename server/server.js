@@ -95,6 +95,34 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle chat message
+  socket.on("chat-message", (data) => {
+    console.log("Server received chat-message:", data);
+    const { roomCode, message } = data;
+    const room = gameManager.getRoom(roomCode);
+    console.log("Room found:", room ? "yes" : "no");
+
+    if (room) {
+      // Get the player who sent the message
+      const player = room.players.get(socket.id);
+      console.log("Player found:", player);
+
+      if (player) {
+        const chatData = {
+          playerName: player.name,
+          color: player.color,
+          message: message,
+        };
+        console.log("Broadcasting chat-message to room:", roomCode, chatData);
+        io.to(roomCode).emit("chat-message", chatData);
+      } else {
+        console.log("Player not found in room players map");
+      }
+    } else {
+      console.log("Room not found:", roomCode);
+    }
+  });
+
   // Handle disconnect
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);

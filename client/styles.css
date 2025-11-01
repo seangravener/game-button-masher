@@ -339,6 +339,130 @@ h2 {
   font-weight: bold;
 }
 
+/* Chat Section */
+.chat-section {
+  margin: 30px 0;
+  background: #FFFFFF;
+  border: 4px solid #000000;
+  box-shadow:
+    4px 4px 0px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.5);
+}
+
+.chat-header {
+  background: #00A800;
+  color: #FFFFFF;
+  padding: 12px 20px;
+  margin: 0;
+  font-size: 1.2em;
+  text-shadow: 2px 2px 0px #000000;
+  border-bottom: 4px solid #000000;
+  text-transform: uppercase;
+}
+
+.chat-messages {
+  height: 200px;
+  overflow-y: auto;
+  padding: 15px;
+  background: #FFFEF7;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 12px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #E09038;
+  border: 2px solid #000000;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #00A800;
+  border: 2px solid #000000;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #58D854;
+}
+
+.chat-message {
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+  animation: message-appear 0.2s ease-out;
+}
+
+@keyframes message-appear {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.chat-message-author {
+  font-weight: bold;
+  margin-right: 8px;
+  text-transform: uppercase;
+}
+
+.chat-message-text {
+  color: #000000;
+  font-weight: normal;
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 0;
+  border-top: 4px solid #000000;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-right: 4px solid #000000;
+  font-size: 16px;
+  background: #FFFFFF;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.chat-input:focus {
+  outline: none;
+  background: #FFFFAA;
+}
+
+.chat-send-btn {
+  background: #E09038;
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #000000;
+  transition: background 0.1s;
+}
+
+.chat-send-btn:hover {
+  background: #FCB040;
+}
+
+.chat-send-btn:active {
+  background: #C84C0C;
+}
+
 /* Game screen */
 .timer {
   text-align: center;

@@ -370,7 +370,77 @@ const Game = {
 };
 
 // ============================================================================
-// 5. SOCKET CONNECTION & EVENT HANDLERS
+// 5. CHAT MANAGER
+// ============================================================================
+// Handles chat functionality in the waiting room
+
+const Chat = {
+  // Send a chat message
+  sendMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+
+    console.log("Chat.sendMessage called");
+    console.log("Message:", message);
+    console.log("Current room:", GameState.currentRoom);
+
+    if (!message || !GameState.currentRoom) {
+      console.log("Message empty or no room, returning");
+      return;
+    }
+
+    // Send message to server
+    console.log("Emitting chat-message to server:", {
+      roomCode: GameState.currentRoom,
+      message: message,
+    });
+    socket.emit("chat-message", {
+      roomCode: GameState.currentRoom,
+      message: message,
+    });
+
+    // Clear input
+    input.value = "";
+  },
+
+  // Display a received chat message
+  displayMessage(data) {
+    console.log("Chat.displayMessage called with data:", data);
+    const messagesContainer = document.getElementById("chatMessages");
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "chat-message";
+
+    messageDiv.innerHTML = `
+      <span class="chat-message-author" style="color: ${data.color}">
+        ${data.playerName}:
+      </span>
+      <span class="chat-message-text">${this.escapeHtml(data.message)}</span>
+    `;
+
+    messagesContainer.appendChild(messageDiv);
+
+    // Auto-scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  },
+
+  // Escape HTML to prevent XSS
+  escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  },
+
+  // Clear chat when leaving room
+  clearMessages() {
+    const messagesContainer = document.getElementById("chatMessages");
+    if (messagesContainer) {
+      messagesContainer.innerHTML = "";
+    }
+  },
+};
+
+// ============================================================================
+// 6. SOCKET CONNECTION & EVENT HANDLERS
 // ============================================================================
 // Manages real-time communication with the game server
 // All network events are registered here in a declarative way
@@ -390,6 +460,12 @@ const socketEventHandlers = {
     if (roomState.status === "waiting") {
       UI.updateWaitingRoom(roomState);
     }
+  },
+
+  // Chat Events
+  "chat-message": (data) => {
+    console.log("Socket received chat-message event:", data);
+    Chat.displayMessage(data);
   },
 
   // Game Start Events
@@ -440,7 +516,7 @@ Object.entries(socketEventHandlers).forEach(([eventName, handler]) => {
 });
 
 // ============================================================================
-// 6. GLOBAL FUNCTIONS FOR HTML ONCLICK HANDLERS
+// 7. GLOBAL FUNCTIONS FOR HTML ONCLICK HANDLERS
 // ============================================================================
 // These functions are called directly from HTML onclick attributes
 // They simply delegate to the appropriate manager
@@ -463,4 +539,8 @@ function playAgain() {
 
 function leaveRoom() {
   Room.leave();
+}
+
+function sendChatMessage() {
+  Chat.sendMessage();
 }
