@@ -1,0 +1,33 @@
+# Multi-stage build for maximum security using distroless
+# Stage 1: Build stage
+FROM docker.io/library/node:22-alpine3.20 AS builder
+
+WORKDIR /app
+
+# Update packages for security
+RUN apk update && apk upgrade --no-cache
+
+# Copy and install dependencies
+COPY server/package*.json ./server/
+WORKDIR /app/server
+RUN npm ci --only=production
+
+# Stage 2: Runtime stage with distroless
+FROM gcr.io/distroless/nodejs22-debian12:nonroot
+
+# Copy application files
+WORKDIR /app
+COPY --from=builder /app/server/node_modules ./server/node_modules
+COPY server/ ./server/
+COPY client/ ./client/
+
+# Expose the application port
+EXPOSE 3000
+
+# Set environment variable
+ENV NODE_ENV=production
+
+# Distroless runs as non-root by default (UID 65532)
+# Start the server
+WORKDIR /app/server
+CMD ["server.js"]

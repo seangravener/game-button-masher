@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  button-smasher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: button-smasher-game
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+    # Optional: add resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M

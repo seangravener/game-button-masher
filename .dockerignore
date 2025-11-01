@@ -1,0 +1,37 @@
+# Node modules
+node_modules/
+server/node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Development files
+.editorconfig
+.prettierrc
+*.md
+QUICKSTART.md
+README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Scripts
+start.sh
+
+# Environment files
+.env
+.env.local
+.env.*.local
