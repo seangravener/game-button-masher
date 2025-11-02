@@ -162,9 +162,27 @@ echo ""
 echo "This may take a minute..."
 echo ""
 
-if $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml run --rm \
-    --entrypoint certbot \
-    certbot certonly \
+# Determine the container command (podman or docker)
+if command -v podman &> /dev/null; then
+    CONTAINER_CMD="podman"
+else
+    CONTAINER_CMD="docker"
+fi
+
+# Get absolute path to certbot directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+CERTBOT_WWW="$PROJECT_ROOT/certbot/www"
+CERTBOT_CONF="$PROJECT_ROOT/certbot/conf"
+
+# Run certbot to obtain certificate
+# Note: Using direct container run to avoid podman-compose bug with 'run' command
+if $CONTAINER_CMD run --rm -it \
+    -v "$CERTBOT_WWW:/var/www/certbot:rw" \
+    -v "$CERTBOT_CONF:/etc/letsencrypt:rw" \
+    --network docker_app-network \
+    docker.io/certbot/certbot:latest \
+    certonly \
     --webroot \
     --webroot-path=/var/www/certbot \
     --email "$EMAIL" \
