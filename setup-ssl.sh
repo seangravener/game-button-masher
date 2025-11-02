@@ -162,7 +162,9 @@ echo ""
 echo "This may take a minute..."
 echo ""
 
-if $COMPOSE_CMD -f docker-compose.ssl.yml run --rm certbot certonly \
+if $COMPOSE_CMD -f docker-compose.ssl.yml run --rm \
+    --entrypoint certbot \
+    certbot certonly \
     --webroot \
     --webroot-path=/var/www/certbot \
     --email "$EMAIL" \
