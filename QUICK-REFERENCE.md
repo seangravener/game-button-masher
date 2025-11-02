@@ -6,7 +6,7 @@
 
 ```bash
 # Start development server
-./scripts/start.sh
+./scripts/run.sh
 
 # Or manually
 cd src/server && npm start
@@ -87,7 +87,7 @@ podman build -f config/docker/Dockerfile.distroless -t button-smasher:distroless
 ## Troubleshooting
 
 **"Command not found"**
-- Scripts moved to `scripts/` - use `./scripts/start.sh`
+- Scripts moved to `scripts/` - use `./scripts/run.sh`
 
 **"File not found" in Docker**
 - Use full path: `-f config/docker/docker-compose.yml`

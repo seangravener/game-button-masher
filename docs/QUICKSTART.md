@@ -20,7 +20,7 @@ npm start
 Or use the quick start script from the project root:
 
 ```bash
-./scripts/start.sh
+./scripts/run.sh
 ```
 
 ### Step 3: Open in Browser

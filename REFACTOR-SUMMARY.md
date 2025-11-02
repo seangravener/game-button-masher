@@ -27,7 +27,7 @@ game-button-smasher/
 │   └── nginx/                    # Nginx configurations
 │       └── conf/
 ├── scripts/                      # Executable scripts
-│   ├── start.sh
+│   ├── run.sh
 │   ├── setup-ssl.sh
 │   └── obtain-cert.sh
 ├── docs/                         # Documentation
@@ -52,13 +52,13 @@ game-button-smasher/
 
 **Before:**
 ```bash
-./start.sh
+./run.sh
 npm start
 ```
 
 **After:**
 ```bash
-./scripts/start.sh
+./scripts/run.sh
 cd src/server && npm start
 ```
 
@@ -98,7 +98,7 @@ podman build -f config/docker/Dockerfile -t button-smasher:latest .
 - ✅ `config/docker/.dockerignore` - Updated to exclude new directories
 
 ### Scripts
-- ✅ `scripts/start.sh` - Updated to reference `src/server/`
+- ✅ `scripts/run.sh` - Updated to reference `src/server/`
 - ✅ `scripts/setup-ssl.sh` - Updated paths to `config/nginx/` and `config/docker/`
 - ✅ `scripts/obtain-cert.sh` - Updated compose file paths
 
@@ -133,7 +133,7 @@ Run these commands to verify the refactor:
 
 ```bash
 # Test development start
-./scripts/start.sh
+./scripts/run.sh
 
 # Test Docker build
 podman build -f config/docker/Dockerfile -t button-smasher:test .
