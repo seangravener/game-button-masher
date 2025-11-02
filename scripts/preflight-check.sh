@@ -105,24 +105,84 @@ fi
 echo ""
 echo -e "${BLUE}[3/8] Checking Port Availability...${NC}"
 
+# Function to check if ports are used by our containers
+check_project_containers() {
+    if [ -n "$CONTAINER_CMD" ]; then
+        # Check for any running containers with our project names
+        $CONTAINER_CMD ps --format "{{.Names}}" 2>/dev/null | grep -E "button-smasher|nginx|certbot" || echo ""
+    else
+        echo ""
+    fi
+}
+
 # Check if ports 80 and 443 are available
 PORT_80_USED=$(ss -tlnp 2>/dev/null | grep ':80 ' || netstat -tlnp 2>/dev/null | grep ':80 ' || echo "")
 PORT_443_USED=$(ss -tlnp 2>/dev/null | grep ':443 ' || netstat -tlnp 2>/dev/null | grep ':443 ' || echo "")
+PROJECT_CONTAINERS=$(check_project_containers)
 
-if [ -z "$PORT_80_USED" ]; then
-    check_requirement "Port 80 available" "pass"
-else
-    check_requirement "Port 80 available" "fail" "warning" \
-        "Port 80 is in use. Stop the service using it or setup will fail."
-    echo -e "  ${BLUE}→${NC} Currently used by: $PORT_80_USED"
+# Determine if cleanup is needed
+PORTS_BLOCKED=false
+if [ -n "$PORT_80_USED" ] || [ -n "$PORT_443_USED" ]; then
+    PORTS_BLOCKED=true
 fi
 
-if [ -z "$PORT_443_USED" ]; then
-    check_requirement "Port 443 available" "pass"
+if [ "$PORTS_BLOCKED" = "true" ] && [ -n "$PROJECT_CONTAINERS" ]; then
+    # Ports are blocked by our own containers - auto-cleanup
+    echo -e "${YELLOW}⚠${NC} Ports in use by previous deployment"
+    echo -e "  ${BLUE}→${NC} Detected containers: $PROJECT_CONTAINERS"
+    echo -e "  ${BLUE}→${NC} Cleaning up stale containers..."
+
+    # Determine compose command if not already set
+    if [ -z "$COMPOSE_CMD" ]; then
+        if command -v podman-compose &> /dev/null; then
+            COMPOSE_CMD="podman-compose"
+        elif command -v docker-compose &> /dev/null; then
+            COMPOSE_CMD="docker-compose"
+        fi
+    fi
+
+    # Try to clean up with compose
+    CLEANUP_SUCCESS=false
+    if [ -n "$COMPOSE_CMD" ]; then
+        # Try SSL compose file first, then regular
+        if [ -f "$PROJECT_ROOT/config/docker/docker-compose.ssl.yml" ]; then
+            $COMPOSE_CMD -f "$PROJECT_ROOT/config/docker/docker-compose.ssl.yml" down &>/dev/null && CLEANUP_SUCCESS=true
+        fi
+        if [ "$CLEANUP_SUCCESS" = "false" ] && [ -f "$PROJECT_ROOT/config/docker/docker-compose.yml" ]; then
+            $COMPOSE_CMD -f "$PROJECT_ROOT/config/docker/docker-compose.yml" down &>/dev/null && CLEANUP_SUCCESS=true
+        fi
+    fi
+
+    # If compose cleanup failed, try direct container removal
+    if [ "$CLEANUP_SUCCESS" = "false" ] && [ -n "$CONTAINER_CMD" ]; then
+        $CONTAINER_CMD stop $PROJECT_CONTAINERS &>/dev/null || true
+        $CONTAINER_CMD rm -f $PROJECT_CONTAINERS &>/dev/null || true
+        CLEANUP_SUCCESS=true
+    fi
+
+    if [ "$CLEANUP_SUCCESS" = "true" ]; then
+        echo -e "  ${GREEN}✓${NC} Cleanup successful"
+        check_requirement "Ports 80 and 443 now available" "pass"
+    else
+        check_requirement "Ports 80 and 443 available" "fail" "error" \
+            "Failed to clean up containers. Run: podman-compose down or docker-compose down"
+    fi
+elif [ "$PORTS_BLOCKED" = "true" ]; then
+    # Ports blocked by external service
+    if [ -n "$PORT_80_USED" ]; then
+        check_requirement "Port 80 available" "fail" "warning" \
+            "Port 80 is in use by external service. Stop it first: sudo systemctl stop nginx/apache2"
+        echo -e "  ${BLUE}→${NC} Currently used by: $(echo "$PORT_80_USED" | head -1)"
+    fi
+    if [ -n "$PORT_443_USED" ]; then
+        check_requirement "Port 443 available" "fail" "warning" \
+            "Port 443 is in use by external service. Stop it first."
+        echo -e "  ${BLUE}→${NC} Currently used by: $(echo "$PORT_443_USED" | head -1)"
+    fi
 else
-    check_requirement "Port 443 available" "fail" "warning" \
-        "Port 443 is in use. This may cause issues."
-    echo -e "  ${BLUE}→${NC} Currently used by: $PORT_443_USED"
+    # Ports are free
+    check_requirement "Port 80 available" "pass"
+    check_requirement "Port 443 available" "pass"
 fi
 
 echo ""

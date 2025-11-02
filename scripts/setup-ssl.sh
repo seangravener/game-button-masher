@@ -42,6 +42,21 @@ else
     exit 1
 fi
 
+# Clean up any previous deployments to ensure fresh start
+echo ""
+echo -e "${BLUE}Preparing environment...${NC}"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Try to stop any existing containers from previous attempts
+if [ -f "$PROJECT_ROOT/config/docker/docker-compose.ssl.yml" ]; then
+    $COMPOSE_CMD -f "$PROJECT_ROOT/config/docker/docker-compose.ssl.yml" down 2>/dev/null || true
+fi
+if [ -f "$PROJECT_ROOT/config/docker/docker-compose.yml" ]; then
+    $COMPOSE_CMD -f "$PROJECT_ROOT/config/docker/docker-compose.yml" down 2>/dev/null || true
+fi
+
+echo -e "${GREEN}✓ Ready for fresh deployment${NC}"
+
 # Ask user for SSL preference
 echo ""
 echo -e "${YELLOW}Do you want to set up HTTPS with Let's Encrypt SSL?${NC}"
