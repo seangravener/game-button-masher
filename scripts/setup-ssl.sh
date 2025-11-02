@@ -256,6 +256,19 @@ EOF
     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml down
     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml up -d
 
+    # Wait for certbot container to be ready
+    echo ""
+    echo -e "${BLUE}Verifying certificate renewal process...${NC}"
+    sleep 5
+
+    # Test certificate renewal with dry-run
+    if $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml exec -T certbot \
+        certbot renew --dry-run --webroot -w /var/www/certbot 2>&1 | grep -q "The dry run was successful"; then
+        echo -e "${GREEN}✓ Certificate renewal test passed${NC}"
+    else
+        echo -e "${YELLOW}⚠ Certificate renewal test couldn't complete (this is usually okay on first run)${NC}"
+    fi
+
     echo ""
     echo -e "${GREEN}========================================${NC}"
     echo -e "${GREEN}✓ SSL Setup Complete!${NC}"
@@ -271,9 +284,13 @@ EOF
     echo "• Make sure your firewall allows ports 80 and 443"
     echo ""
     echo -e "${BLUE}Useful Commands:${NC}"
-    echo "  View logs:     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml logs -f"
-    echo "  Stop services: $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml down"
-    echo "  Restart:       $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml restart nginx"
+    echo "  View logs:        $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml logs -f"
+    echo "  Stop services:    $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml down"
+    echo "  Restart nginx:    $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml restart nginx"
+    echo "  Check certs:      $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml exec certbot certbot certificates"
+    echo "  Test renewal:     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml exec certbot certbot renew --dry-run"
+    echo "  View cert logs:   $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml logs certbot"
+    echo "  Check health:     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml ps"
     echo ""
 
 else

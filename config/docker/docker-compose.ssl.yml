@@ -16,6 +16,12 @@ services:
     # Don't expose port directly - only through nginx
     expose:
       - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     deploy:
       resources:
         limits:
@@ -42,6 +48,12 @@ services:
       - app-network
     restart: unless-stopped
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # Certbot for SSL certificates (auto-renewal)
   certbot:
@@ -50,8 +62,34 @@ services:
     volumes:
       - ../../certbot/www:/var/www/certbot:rw
       - ../../certbot/conf:/etc/letsencrypt:rw
-    # Only start this after initial cert is obtained
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done;'"
+    depends_on:
+      - nginx
+    networks:
+      - app-network
+    # Wait for initial cert, then start renewal daemon
+    entrypoint: >
+      /bin/sh -c '
+      trap exit TERM;
+      echo "Certbot: Waiting for initial certificate...";
+      TIMEOUT=1800;
+      ELAPSED=0;
+      while [ ! -f /etc/letsencrypt/live/*/fullchain.pem ] && [ $$ELAPSED -lt $$TIMEOUT ]; do
+        echo "Certbot: Certificate not found yet, waiting... ($$ELAPSED/$$TIMEOUT seconds)";
+        sleep 10;
+        ELAPSED=$$((ELAPSED + 10));
+      done;
+      if [ ! -f /etc/letsencrypt/live/*/fullchain.pem ]; then
+        echo "Certbot: ERROR - Timeout waiting for initial certificate after $$TIMEOUT seconds";
+        exit 1;
+      fi;
+      echo "Certbot: Certificate found! Starting renewal daemon...";
+      while :; do
+        echo "Certbot: Checking for certificate renewal...";
+        certbot renew --webroot -w /var/www/certbot --quiet;
+        echo "Certbot: Next renewal check in 12 hours";
+        sleep 12h & wait $${!};
+      done;
+      '
     restart: unless-stopped
 
 networks:
