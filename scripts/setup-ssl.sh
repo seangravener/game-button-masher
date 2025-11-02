@@ -13,6 +13,22 @@ echo -e "${BLUE}Button Smasher SSL Setup with Let's Encrypt${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
+# Run pre-flight checks
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/preflight-check.sh" ]; then
+    echo -e "${BLUE}Running pre-flight checks...${NC}"
+    echo ""
+    if bash "$SCRIPT_DIR/preflight-check.sh"; then
+        echo ""
+    else
+        echo -e "${RED}Pre-flight checks failed. Please fix the errors above.${NC}"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}⚠ Warning: preflight-check.sh not found, skipping pre-flight checks${NC}"
+    echo ""
+fi
+
 # Check if running with podman or docker
 if command -v podman-compose &> /dev/null; then
     COMPOSE_CMD="podman-compose"

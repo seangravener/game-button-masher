@@ -4,6 +4,60 @@
 
 This project uses **Let's Encrypt** for free SSL certificates with automated renewal via **Certbot**. The SSL infrastructure is designed for production use with zero-downtime renewals.
 
+## System Requirements
+
+Before running the SSL setup, ensure your system meets these requirements:
+
+### Required
+
+- **Podman** (recommended) or **Docker** with compose
+- **Domain name** pointing to your server's public IP
+- **Ports 80 and 443** open and accessible from the internet
+- **Internet connectivity** to reach Let's Encrypt API
+- **Root or sudo access** for system configuration
+
+### Rootless Podman Specific
+
+If using **rootless podman** (recommended for security), you must configure the system to allow binding to privileged ports (80/443):
+
+```bash
+# Add the configuration
+echo 'net.ipv4.ip_unprivileged_port_start=80' | sudo tee -a /etc/sysctl.conf
+
+# Apply immediately
+sudo sysctl -p
+
+# Verify
+sysctl net.ipv4.ip_unprivileged_port_start
+# Should output: net.ipv4.ip_unprivileged_port_start = 80
+```
+
+**Why is this needed?**
+
+By default, Linux restricts non-root processes from binding to ports below 1024 (privileged ports). This prevents rootless containers from using ports 80 (HTTP) and 443 (HTTPS). The `ip_unprivileged_port_start` setting lowers this threshold to allow rootless podman to bind to these ports while maintaining the security benefits of running containers as a non-root user.
+
+### Pre-flight Checks
+
+The setup script automatically runs comprehensive pre-flight checks that verify:
+
+- ✅ Container runtime (podman/docker) installed
+- ✅ Compose tools available
+- ✅ Privileged port access configured
+- ✅ Ports 80 and 443 available
+- ✅ Required system commands (curl, wget, dig)
+- ✅ Internet and Let's Encrypt API connectivity
+- ✅ Firewall configuration
+- ✅ File system permissions
+- ✅ Container network setup
+
+If any checks fail, you'll receive clear instructions on how to fix them.
+
+You can also run pre-flight checks manually:
+
+```bash
+./scripts/preflight-check.sh
+```
+
 ## Quick Start
 
 ```bash
@@ -162,6 +216,60 @@ podman-compose -f config/docker/docker-compose.ssl.yml logs -f button-smasher
 ```
 
 ## Troubleshooting
+
+### Rootless Podman Port Permission Error
+
+**Symptoms:**
+
+- Error: `rootlessport cannot expose privileged port 80`
+- Error: `bind: permission denied`
+- Nginx container fails to start
+- Certificate issuance fails with 404 errors
+
+**Root Cause:**
+
+Rootless podman cannot bind to privileged ports (< 1024) by default. Ports 80 and 443 are required for HTTP/HTTPS and ACME challenges.
+
+**Solution:**
+
+Configure the system to allow unprivileged processes to bind to ports 80+:
+
+```bash
+# Check current setting
+sysctl net.ipv4.ip_unprivileged_port_start
+# If output is 1024, you need to lower it
+
+# Fix: Allow binding to port 80 and above
+echo 'net.ipv4.ip_unprivileged_port_start=80' | sudo tee -a /etc/sysctl.conf
+
+# Apply immediately (no reboot needed)
+sudo sysctl -p
+
+# Verify the change
+sysctl net.ipv4.ip_unprivileged_port_start
+# Should show: net.ipv4.ip_unprivileged_port_start = 80
+
+# Clean up any failed containers
+podman-compose -f config/docker/docker-compose.ssl.yml down
+podman system prune -f
+
+# Retry SSL setup
+./scripts/setup-ssl.sh
+```
+
+**Alternative (Not Recommended):**
+
+Run with sudo (loses security benefits of rootless):
+
+```bash
+sudo podman-compose -f config/docker/docker-compose.ssl.yml up -d
+```
+
+**Why this is required:**
+
+Linux kernel restricts binding to ports < 1024 to privileged (root) processes for security. The `ip_unprivileged_port_start` setting allows rootless containers to bind to web ports while maintaining the security isolation of running as a non-root user.
+
+---
 
 ### Certificate Not Renewing
 
