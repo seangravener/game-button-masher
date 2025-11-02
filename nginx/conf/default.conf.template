@@ -1,0 +1,28 @@
+# Nginx configuration for Button Smasher with optional SSL
+# This file is processed by the setup script
+
+upstream button_smasher {
+    server button-smasher:3000;
+}
+
+# HTTP server - Always enabled
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN};
+
+    # Allow Let's Encrypt ACME challenge
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # If SSL is enabled, redirect HTTP to HTTPS
+    # Otherwise, proxy directly to the app
+    location / {
+        # This will be replaced by setup script
+        ${HTTP_REDIRECT_OR_PROXY}
+    }
+}
+
+# HTTPS server - Only enabled when SSL is configured
+${HTTPS_SERVER_BLOCK}

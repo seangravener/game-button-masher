@@ -30,6 +30,11 @@ Thumbs.db
 
 # Scripts
 start.sh
+setup-ssl.sh
+
+# SSL/Nginx files
+nginx/
+certbot/
 
 # Environment files
 .env
