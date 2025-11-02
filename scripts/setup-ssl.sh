@@ -40,12 +40,12 @@ if [[ "$enable_ssl" != "y" && "$enable_ssl" != "Y" ]]; then
     echo -e "${BLUE}Setting up HTTP-only configuration...${NC}"
 
     # Use simple HTTP configuration
-    cp nginx/conf/http-only.conf nginx/conf/active.conf
+    cp config/nginx/conf/http-only.conf config/nginx/conf/active.conf
 
     echo -e "${GREEN}✓ HTTP configuration created${NC}"
     echo ""
     echo -e "${BLUE}Starting services...${NC}"
-    $COMPOSE_CMD -f docker-compose.yml up -d
+    $COMPOSE_CMD -f config/docker/docker-compose.yml up -d
 
     echo ""
     echo -e "${GREEN}========================================${NC}"
@@ -119,7 +119,7 @@ mkdir -p certbot/conf
 
 # Create initial Nginx config for ACME challenge (HTTP only)
 echo -e "${BLUE}Setting up initial Nginx configuration...${NC}"
-cat > nginx/conf/active.conf << 'EOF'
+cat > config/nginx/conf/active.conf << 'EOF'
 upstream button_smasher {
     server button-smasher:3000;
 }
@@ -140,14 +140,14 @@ server {
 EOF
 
 # Replace domain placeholder
-sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" nginx/conf/active.conf
+sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" config/nginx/conf/active.conf
 
 echo -e "${GREEN}✓ Initial configuration created${NC}"
 
 # Start services with HTTP only first
 echo ""
 echo -e "${BLUE}Starting services for certificate generation...${NC}"
-$COMPOSE_CMD -f docker-compose.ssl.yml up -d button-smasher nginx
+$COMPOSE_CMD -f config/docker/docker-compose.ssl.yml up -d button-smasher nginx
 
 # Wait for nginx to be ready
 echo -e "${BLUE}Waiting for Nginx to be ready...${NC}"
@@ -162,7 +162,7 @@ echo ""
 echo "This may take a minute..."
 echo ""
 
-if $COMPOSE_CMD -f docker-compose.ssl.yml run --rm \
+if $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml run --rm \
     --entrypoint certbot \
     certbot certonly \
     --webroot \
@@ -178,7 +178,7 @@ if $COMPOSE_CMD -f docker-compose.ssl.yml run --rm \
 
     # Create full Nginx config with SSL
     echo -e "${BLUE}Updating Nginx configuration with SSL...${NC}"
-    cat > nginx/conf/active.conf << 'EOF'
+    cat > config/nginx/conf/active.conf << 'EOF'
 upstream button_smasher {
     server button-smasher:3000;
 }
@@ -246,15 +246,15 @@ server {
 EOF
 
     # Replace domain placeholders
-    sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" nginx/conf/active.conf
+    sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" config/nginx/conf/active.conf
 
     echo -e "${GREEN}✓ SSL configuration created${NC}"
 
     # Restart services with full configuration
     echo ""
     echo -e "${BLUE}Restarting services with SSL...${NC}"
-    $COMPOSE_CMD -f docker-compose.ssl.yml down
-    $COMPOSE_CMD -f docker-compose.ssl.yml up -d
+    $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml down
+    $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml up -d
 
     echo ""
     echo -e "${GREEN}========================================${NC}"
@@ -271,9 +271,9 @@ EOF
     echo "• Make sure your firewall allows ports 80 and 443"
     echo ""
     echo -e "${BLUE}Useful Commands:${NC}"
-    echo "  View logs:     $COMPOSE_CMD -f docker-compose.ssl.yml logs -f"
-    echo "  Stop services: $COMPOSE_CMD -f docker-compose.ssl.yml down"
-    echo "  Restart:       $COMPOSE_CMD -f docker-compose.ssl.yml restart nginx"
+    echo "  View logs:     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml logs -f"
+    echo "  Stop services: $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml down"
+    echo "  Restart:       $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml restart nginx"
     echo ""
 
 else
@@ -290,8 +290,8 @@ else
     echo ""
     echo -e "${BLUE}Falling back to HTTP-only mode...${NC}"
 
-    cp nginx/conf/http-only.conf nginx/conf/active.conf
-    $COMPOSE_CMD -f docker-compose.yml up -d
+    cp config/nginx/conf/http-only.conf config/nginx/conf/active.conf
+    $COMPOSE_CMD -f config/docker/docker-compose.yml up -d
 
     echo ""
     echo "Your game is running on HTTP at: http://<your-ip>:3000"

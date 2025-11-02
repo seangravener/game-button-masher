@@ -9,16 +9,16 @@ WORKDIR /app
 RUN apk update && apk upgrade --no-cache
 
 # Copy server package files
-COPY server/package*.json ./server/
+COPY src/server/package*.json ./src/server/
 
 # Install production dependencies
-WORKDIR /app/server
+WORKDIR /app/src/server
 RUN npm ci --only=production
 
 # Copy application files
 WORKDIR /app
-COPY server/ ./server/
-COPY client/ ./client/
+COPY src/server/ ./src/server/
+COPY src/client/ ./src/client/
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S appuser && \
@@ -39,5 +39,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Start the server
-WORKDIR /app/server
+WORKDIR /app/src/server
 CMD ["node", "server.js"]

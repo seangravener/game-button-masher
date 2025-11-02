@@ -3,8 +3,8 @@ version: '3.8'
 services:
   button-smasher:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: config/docker/Dockerfile
     container_name: button-smasher-game
     ports:
       - "3000:3000"

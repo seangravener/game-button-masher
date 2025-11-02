@@ -2,7 +2,7 @@
 
 ## Initial SSL Certificate Setup
 
-This diagram shows the complete flow when running `./setup-ssl.sh` for the first time.
+This diagram shows the complete flow when running `./scripts/setup-ssl.sh` for the first time.
 
 ```mermaid
 sequenceDiagram
@@ -15,7 +15,7 @@ sequenceDiagram
     participant Certbot as Certbot Container
     participant LetsEncrypt as Let's Encrypt CA
 
-    User->>Script: Run ./setup-ssl.sh
+    User->>Script: Run ./scripts/setup-ssl.sh
     Script->>User: Prompt: Enable SSL? (y/n)
     User->>Script: y
 
@@ -67,7 +67,7 @@ sequenceDiagram
 
     Note over Script,Nginx: Configure HTTPS
     Script->>FileSystem: Update nginx/conf/active.conf<br/>(HTTPS config with SSL certs)
-    Script->>Compose: docker-compose down
+    Script->>Compose: docker-compose -f config/docker/docker-compose.yml down
     Compose->>Nginx: Stop nginx
     Compose->>App: Stop button-smasher
 
@@ -233,7 +233,7 @@ This diagram shows the decision tree in the setup script.
 
 ```mermaid
 flowchart TD
-    Start([User runs ./setup-ssl.sh]) --> CheckCompose{Podman or Docker<br/>Compose installed?}
+    Start([User runs ./scripts/setup-ssl.sh]) --> CheckCompose{Podman or Docker<br/>Compose installed?}
 
     CheckCompose -->|No| Error1[❌ Error: Install compose first]
     CheckCompose -->|Yes| AskSSL{Ask: Enable SSL?}

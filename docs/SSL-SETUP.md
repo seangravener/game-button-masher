@@ -41,7 +41,7 @@ sudo ufw allow 443/tcp
 
 ```bash
 # Run the interactive setup script
-./setup-ssl.sh
+./scripts/setup-ssl.sh
 ```
 
 The script will:
@@ -96,7 +96,7 @@ If you don't have a domain or just want to test locally:
 
 ```bash
 # Use the standard docker-compose
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 
 # Access at http://localhost:3000
 ```
@@ -255,7 +255,7 @@ Ensure all resources (scripts, CSS, images) are loaded over HTTPS:
 
 ### From HTTP to HTTPS:
 ```bash
-./setup-ssl.sh
+./scripts/setup-ssl.sh
 # Answer 'y' to enable SSL
 ```
 
@@ -265,7 +265,7 @@ Ensure all resources (scripts, CSS, images) are loaded over HTTPS:
 podman-compose -f docker-compose.ssl.yml down
 
 # Start HTTP-only
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 ```
 
 ## Security Best Practices

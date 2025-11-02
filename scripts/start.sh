@@ -5,7 +5,7 @@ echo "========================================"
 echo ""
 
 # Check if node_modules exists
-if [ ! -d "server/node_modules" ]; then
+if [ ! -d "src/server/node_modules" ]; then
     echo "📦 Installing dependencies..."
     cd server
     npm install

@@ -47,7 +47,7 @@ podman run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image
 - Recommended for most use cases
 
 ```bash
-podman build -t button-smasher:alpine .
+podman build -f config/docker/Dockerfile -t button-smasher:alpine .
 ```
 
 ### Option 2: Distroless (Maximum Security)
@@ -191,7 +191,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Build image
-        run: podman build -t button-smasher:${{ github.sha }} .
+        run: podman build -f config/docker/Dockerfile -t button-smasher:${{ github.sha }} .
 
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master

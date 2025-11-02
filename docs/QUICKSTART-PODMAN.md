@@ -5,7 +5,7 @@
 ### Option 1: Using Podman Compose (Recommended)
 ```bash
 # Start the container in the background
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 
 # The -d flag means "detached" (runs in background)
 ```
@@ -13,7 +13,7 @@ podman-compose up -d
 ### Option 2: Direct Podman Command
 ```bash
 # First, build the image
-podman build -t button-smasher:latest .
+podman build -f config/docker/Dockerfile -t button-smasher:latest .
 
 # Then run it
 podman run -d -p 3000:3000 --name button-smasher button-smasher:latest
@@ -75,7 +75,7 @@ podman logs -t button-smasher-game
 
 ### Using Podman Compose
 ```bash
-podman-compose down
+podman-compose -f config/docker/docker-compose.yml down
 ```
 
 ### Using Podman Desktop
@@ -99,8 +99,8 @@ podman stop button-smasher-game
 podman restart button-smasher-game
 
 # Or stop and start fresh
-podman-compose down
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml down
+podman-compose -f config/docker/docker-compose.yml up -d
 ```
 
 ## Troubleshooting
@@ -119,9 +119,9 @@ podman port button-smasher-game
 sudo ss -tlnp | grep 3000
 
 # Or try a different port
-podman-compose down
+podman-compose -f config/docker/docker-compose.yml down
 # Edit docker-compose.yml: change "3000:3000" to "8080:3000"
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 # Then access http://localhost:8080
 ```
 
@@ -134,7 +134,7 @@ podman logs button-smasher-game
 
 **Common issues:**
 - Port 3000 already in use
-- Missing dependencies (rebuild: `podman-compose build --no-cache`)
+- Missing dependencies (rebuild: `podman-compose -f config/docker/docker-compose.yml build --no-cache`)
 
 ### Can't find the container
 
@@ -161,13 +161,13 @@ If you modify the code, you need to rebuild:
 
 ```bash
 # Stop and remove old container
-podman-compose down
+podman-compose -f config/docker/docker-compose.yml down
 
 # Rebuild the image
-podman-compose build --no-cache
+podman-compose -f config/docker/docker-compose.yml build --no-cache
 
 # Start fresh
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 
 # Check logs to confirm it's running
 podman logs -f button-smasher-game
@@ -185,7 +185,7 @@ podman logs -f button-smasher-game
 
 ```bash
 # Start
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 
 # Check status
 podman ps
@@ -194,10 +194,10 @@ podman ps
 podman logs -f button-smasher-game
 
 # Stop
-podman-compose down
+podman-compose -f config/docker/docker-compose.yml down
 
 # Rebuild
-podman-compose build --no-cache
+podman-compose -f config/docker/docker-compose.yml build --no-cache
 
 # Access app
 http://localhost:3000

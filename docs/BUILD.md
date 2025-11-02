@@ -5,13 +5,13 @@
 ### Using Podman
 
 ```bash
-podman build -t button-smasher:latest .
+podman build -f config/docker/Dockerfile -t button-smasher:latest .
 ```
 
 ### Using Docker
 
 ```bash
-docker build -t button-smasher:latest .
+docker build -f config/docker/Dockerfile -t button-smasher:latest .
 ```
 
 ## Running the Container
@@ -48,26 +48,26 @@ docker run --rm -p 8080:3000 -e PORT=3000 --name button-smasher button-smasher:l
 
 ```bash
 # Start the service
-podman-compose up -d
+podman-compose -f config/docker/docker-compose.yml up -d
 
 # View logs
-podman-compose logs -f
+podman-compose -f config/docker/docker-compose.yml logs -f
 
 # Stop the service
-podman-compose down
+podman-compose -f config/docker/docker-compose.yml down
 ```
 
 ### Using Docker Compose
 
 ```bash
 # Start the service
-docker-compose up -d
+docker-compose -f config/docker/docker-compose.yml up -d
 
 # View logs
-docker-compose logs -f
+docker-compose -f config/docker/docker-compose.yml logs -f
 
 # Stop the service
-docker-compose down
+docker-compose -f config/docker/docker-compose.yml down
 ```
 
 ## Container Management

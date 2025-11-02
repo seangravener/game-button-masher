@@ -39,7 +39,7 @@ This isn't just following a tutorial—you'll understand the fundamental buildin
 
 2. **Start the server**:
    ```bash
-   npm start
+   cd src/server && npm start
    ```
 
    You should see `Server running on port 3000`
@@ -59,11 +59,11 @@ Here's what each file does—no mystery, just straightforward organization:
 
 ```
 game-button-smasher/
-├── server/
+├── src/server/
 │   ├── server.js          # Where the magic happens - handles all player connections
 │   ├── game-manager.js    # The referee - manages rooms, scores, and game rules
 │   └── package.json       # Lists what npm needs to install
-├── client/
+├── src/client/
 │   ├── index.html         # What players see in their browser
 │   ├── game-client.js     # Talks to the server, updates the game screen
 │   └── styles.css         # Makes it look good
@@ -150,7 +150,7 @@ This project is ideal for teaching:
 ## Troubleshooting
 
 ### Cannot connect to server
-- Make sure the server is running (`npm start` in server directory)
+- Make sure the server is running (`cd src/server && npm start` in server directory)
 - Check that you're using the correct URL
 - Verify firewall isn't blocking port 3000
 

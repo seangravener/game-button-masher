@@ -1,6 +1,6 @@
 # Node modules
 node_modules/
-server/node_modules/
+src/server/node_modules/
 npm-debug.log
 yarn-error.log
 package-lock.json
@@ -14,8 +14,6 @@ package-lock.json
 .editorconfig
 .prettierrc
 *.md
-QUICKSTART.md
-README.md
 
 # IDE
 .vscode/
@@ -28,12 +26,10 @@ README.md
 .DS_Store
 Thumbs.db
 
-# Scripts
-start.sh
-setup-ssl.sh
-
-# SSL/Nginx files
-nginx/
+# Project organization
+scripts/
+docs/
+config/
 certbot/
 
 # Environment files
