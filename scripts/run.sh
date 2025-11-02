@@ -144,16 +144,20 @@ mode_compose_ssl() {
     echo "Using: $COMPOSE_CMD"
     echo ""
 
-    if [ ! -d "config/nginx/conf" ] || [ ! -f "config/nginx/conf/active.conf" ]; then
-        echo -e "${YELLOW}⚠ Warning: SSL not configured${NC}"
+    if [ ! -f "config/nginx/conf/active.conf" ]; then
+        echo -e "${RED}✗ Error: SSL not configured${NC}"
         echo ""
-        echo "Run SSL setup first:"
-        echo "  ./scripts/setup-ssl.sh"
+        echo "The file 'config/nginx/conf/active.conf' does not exist."
         echo ""
-        read -p "Continue anyway? (y/n): " continue
-        if [[ "$continue" != "y" && "$continue" != "Y" ]]; then
-            exit 0
-        fi
+        echo "You must run SSL setup first:"
+        echo -e "  ${GREEN}./scripts/setup-ssl.sh${NC}"
+        echo ""
+        echo "This will:"
+        echo "  1. Configure your domain"
+        echo "  2. Obtain SSL certificates from Let's Encrypt"
+        echo "  3. Create the nginx configuration"
+        echo ""
+        exit 1
     fi
 
     $COMPOSE_CMD -f config/docker/docker-compose.ssl.yml up -d
